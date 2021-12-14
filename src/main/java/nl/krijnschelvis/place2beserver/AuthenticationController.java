@@ -20,6 +20,11 @@ public class AuthenticationController {
     public @ResponseBody String registerUser(@RequestParam String firstName
             , @RequestParam String lastName, @RequestParam String email, @RequestParam String password) {
 
+        // Checks if email already exists
+        if (userRepository.existsByEmail(email)) {
+            return "Failed: Email already in use";
+        }
+
         // Create user bean
         User user = new User();
         user.setFirstName(firstName);
@@ -31,7 +36,7 @@ public class AuthenticationController {
         try {
             userRepository.save(user);
         } catch (Exception e) {
-            return "Failed: Email already in use";
+            return "Failed: Can't save user to the database";
         }
         return "Success: User has been saved to the database";
     }

@@ -31,7 +31,7 @@ public class GatheringController {
         try {
             gatheringRepository.save(gathering);
         } catch (Exception e) {
-            return "Failed: Can't add gathering to database";
+            return "Failed: Can't save gathering to the database";
         }
         return "Success: Gathering has been saved to the database";
     }
