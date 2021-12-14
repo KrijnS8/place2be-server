@@ -37,7 +37,8 @@ public class GatheringController {
     }
 
     @GetMapping(path="/get-all-gatherings")
-    public @ResponseBody Iterable<Gathering> getAllGatherings(@RequestParam String city) {
+    public @ResponseBody Iterable<Gathering> getAllGatheringsInCity(@RequestParam String city) {
+        // Return Iterable of all gatherings in a city
         return gatheringRepository.findGatheringsByCity(city);
     }
 }
