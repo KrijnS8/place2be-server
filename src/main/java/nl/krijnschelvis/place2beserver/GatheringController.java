@@ -2,9 +2,7 @@ package nl.krijnschelvis.place2beserver;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping(path="/gathering")
@@ -12,13 +10,35 @@ public class GatheringController {
     @Autowired
     private GatheringRepository gatheringRepository;
 
-    @GetMapping(path="/get-distance")
-    public @ResponseBody double getDistance() {
-        Gathering g1 = gatheringRepository.findGatheringById(1);
-        Gathering g2 = gatheringRepository.findGatheringById(2);
+    @PostMapping(path="/add-gathering")
+    public @ResponseBody String addGathering(@RequestParam double latitude, @RequestParam double longitude, @RequestParam String city) {
 
-        double d = CalculateDistance.getDistance(g1.getLatitude(), g1.getLongitude(), g2.getLatitude(), g2.getLongitude());
-        return d;
+        // Checks if any gatherings nearby exist
+        Iterable<Gathering> gatheringIterable = gatheringRepository.findGatheringsByCity(city);
+        for (Gathering g: gatheringIterable) {
+            if (CalculateDistance.getDistance(latitude, longitude, g.getLatitude(), g.getLongitude()) < 200.0) {
+                return "Failed: Gathering too close to another gathering";
+            }
+        }
+
+        // Create gathering bean
+        Gathering gathering = new Gathering();
+        gathering.setLatitude(latitude);
+        gathering.setLongitude(longitude);
+        gathering.setCity(city);
+
+        // Try to add gathering to database
+        try {
+            gatheringRepository.save(gathering);
+        } catch (Exception e) {
+            return "Failed: Can't add gathering to database";
+        }
+        return "Success: Gathering has been saved to the database";
+    }
+
+    @GetMapping(path="/get-all-gatherings")
+    public @ResponseBody Iterable<Gathering> getAllGatherings(@RequestParam String city) {
+        return gatheringRepository.findGatheringsByCity(city);
     }
 }
 

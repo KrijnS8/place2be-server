@@ -21,19 +21,19 @@ public class AuthenticationController {
             , @RequestParam String lastName, @RequestParam String email, @RequestParam String password) {
 
         // Create user bean
-        User n = new User();
-        n.setFirstName(firstName);
-        n.setLastName(lastName);
-        n.setEmail(email);
-        n.setPassword(password);
+        User user = new User();
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setEmail(email);
+        user.setPassword(password);
 
         // Try to add user to database
         try {
-            userRepository.save(n);
+            userRepository.save(user);
         } catch (Exception e) {
-            return "Email already in use";
+            return "Failed: Email already in use";
         }
-        return "Saved";
+        return "Success: User has been saved to the database";
     }
 
     @GetMapping(path="/get-user-data")

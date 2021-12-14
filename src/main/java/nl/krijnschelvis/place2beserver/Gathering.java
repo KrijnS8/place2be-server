@@ -19,6 +19,10 @@ public class Gathering {
     @Column(name="city")
     private String city;
 
+    public Gathering() {
+
+    }
+
     public Integer getId() {
         return id;
     }
