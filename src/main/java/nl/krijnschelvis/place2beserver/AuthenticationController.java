@@ -12,7 +12,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping(path="/authentication")
-public class MainController {
+public class AuthenticationController {
     @Autowired
     private UserRepository userRepository;
 
