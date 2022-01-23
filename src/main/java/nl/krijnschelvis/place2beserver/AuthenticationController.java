@@ -1,5 +1,6 @@
 package nl.krijnschelvis.place2beserver;
 
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,12 +18,13 @@ public class AuthenticationController {
     private UserRepository userRepository;
 
     @PostMapping(path="/register-user")
-    public @ResponseBody String registerUser(@RequestParam String firstName
+    public @ResponseBody User registerUser(@RequestParam String firstName
             , @RequestParam String lastName, @RequestParam String email, @RequestParam String password) {
 
         // Checks if email already exists
         if (userRepository.existsByEmail(email)) {
-            return "Failed: Email already in use";
+            // Return empty user bean
+            return new User();
         }
 
         // Create user bean
@@ -36,9 +38,12 @@ public class AuthenticationController {
         try {
             userRepository.save(user);
         } catch (Exception e) {
-            return "Failed: Can't save user to the database";
+            // Return empty user bean
+            return new User();
         }
-        return "Success: User has been saved to the database";
+
+        // Return user
+        return user;
     }
 
     @GetMapping(path="/get-user-data")
@@ -48,7 +53,7 @@ public class AuthenticationController {
             return new User();
         }
 
-        // Return user object
+        // Return user
         User user = userRepository.findUserByEmail(email);
         user.setPassword(null);
         return user;

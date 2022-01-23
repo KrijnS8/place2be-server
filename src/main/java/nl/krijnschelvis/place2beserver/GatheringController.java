@@ -11,13 +11,16 @@ public class GatheringController {
     private GatheringRepository gatheringRepository;
 
     @PostMapping(path="/add-gathering")
-    public @ResponseBody String addGathering(@RequestParam double latitude, @RequestParam double longitude, @RequestParam String city) {
+    public @ResponseBody Gathering addGathering(@RequestParam double latitude, @RequestParam double longitude,
+                                             @RequestParam String street, @RequestParam String postalCode,
+                                             @RequestParam String city, @RequestParam String state,
+                                             @RequestParam String country) {
 
         // Checks if any gatherings nearby exist
         Iterable<Gathering> gatheringIterable = gatheringRepository.findGatheringsByCity(city);
         for (Gathering g: gatheringIterable) {
             if (CalculateDistance.getDistance(latitude, longitude, g.getLatitude(), g.getLongitude()) < 200.0) {
-                return "Failed: Gathering too close to another gathering";
+                return new Gathering();
             }
         }
 
@@ -25,21 +28,25 @@ public class GatheringController {
         Gathering gathering = new Gathering();
         gathering.setLatitude(latitude);
         gathering.setLongitude(longitude);
+        gathering.setStreet(street);
+        gathering.setPostalCode(postalCode);
         gathering.setCity(city);
+        gathering.setState(state);
+        gathering.setCountry(country);
 
         // Try to add gathering to database
         try {
             gatheringRepository.save(gathering);
         } catch (Exception e) {
-            return "Failed: Can't save gathering to the database";
+            return new Gathering();
         }
-        return "Success: Gathering has been saved to the database";
+        return gathering;
     }
 
     @GetMapping(path="/get-all-gatherings")
-    public @ResponseBody Iterable<Gathering> getAllGatheringsInCity(@RequestParam String city) {
-        // Return Iterable of all gatherings in a city
-        return gatheringRepository.findGatheringsByCity(city);
+    public @ResponseBody Iterable<Gathering> getAllGatheringsInCity() {
+        // Return Iterable of all gatherings
+        return gatheringRepository.getGatheringsByIdIsNotNull();
     }
 }
 
