@@ -1,0 +1,17 @@
+{
+  "name": "place2be-server",
+  "image": "registry.cp.kpn-dsh.com/greenbox-training/place2be-server",
+  "cpus": 0.1,
+  "mem": 256,
+  "env": {},
+  "instances": 1,
+  "singleInstance": false,
+  "needsToken": false,
+  "user": "1937:1937",
+  "exposedPorts": {
+    "8080": {
+      "vhost": "{ vhost('training','public') }",
+      "auth": "basic-auth@place2be:place2be:$1$YdjmOOGa$NiavUOdopqNjeBFaJHuv41"
+    }
+  }
+}
