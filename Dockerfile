@@ -1,29 +1,21 @@
-FROM openjdk:11
+FROM    openjdk:11
 
-ARG UID=1937
-ARG GID=1937
-ARG USERNAME=place2be
-ARG GROUPNAME=place2be
+ENV     ARTIFACT=place2be-server-0.0.2-SNAPSHOT.jar
+ENV     USER=place2b
+ENV     HOMEDIR=/user/${USER}
 
-ENV HOMEDIR=/home/java
-ENV ARTIFACT=place2be-server-0.0.1-SNAPSHOT.jar
-
-RUN groupadd --gid ${GID} ${GROUPNAME} && \
-   useradd --uid ${UID} --gid ${GROUPNAME} --home-dir ${HOMEDIR} --shell /bin/bash ${USERNAME}
+RUN     groupadd ${USER} && \
+        useradd --gid ${USER} --home-dir ${HOMEDIR} --shell /bin/bash ${USER}
 
 WORKDIR ${HOMEDIR}
 
-COPY docker-entrypoint.sh .
-COPY target/*.jar ${ARTIFACT}
+COPY    docker-entrypoint.sh .
+COPY    target/${ARTIFACT} .
 
-RUN chown -R ${USERNAME}:${GROUPNAME} ${HOMEDIR} && \
-    chmod -R o-rwx ${HOMEDIR} && \
-    chown ${USERNAME}:${GROUPNAME} docker-entrypoint.sh && \
-    chmod 700 docker-entrypoint.sh && \
-    chown ${USERNAME}:${GROUPNAME} ${ARTIFACT} && \
-    chmod 700 ${ARTIFACT}
-
-USER ${USERNAME}
+RUN     chown ${USER}:${USER} docker-entrypoint.sh && \
+        chmod 700 docker-entrypoint.sh && \
+        chown ${USER}:${USER} ${ARTIFACT} && \
+        chmod 700 ${ARTIFACT}
 
 EXPOSE  8080
 
